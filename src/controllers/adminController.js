@@ -1,4 +1,5 @@
 const { db } = require('../config/firebase');
+
 exports.addContent = async (req, res) => {
   const { type, title, description, mediaUrl } = req.body;
   if (!type || !title) {
@@ -13,11 +14,12 @@ exports.addContent = async (req, res) => {
       createdAt: new Date()
     };
     const doc = await db.collection('content').add(content);
-    res.status(201).json({ id: doc.id, ...content });
+    return res.status(201).json({ id: doc.id, ...content });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };
+
 exports.updateContent = async (req, res) => {
   const { id } = req.params;
   const { type, title, description, mediaUrl } = req.body;
@@ -33,11 +35,12 @@ exports.updateContent = async (req, res) => {
       updatedAt: new Date()
     };
     await db.collection('content').doc(id).update(updatedContent);
-    res.json({ id, ...updatedContent });
+    return res.json({ id, ...updatedContent });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };
+
 exports.deleteContent = async (req, res) => {
   const { id } = req.params;
   if (!id) {
@@ -45,11 +48,12 @@ exports.deleteContent = async (req, res) => {
   }
   try {
     await db.collection('content').doc(id).delete();
-    res.json({ message: 'Content deleted successfully' });
+    return res.json({ message: 'Content deleted successfully' });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };
+
 exports.moderateContent = async (req, res) => {
   const { id, approved } = req.body;
   if (!id || approved === undefined) {
@@ -57,8 +61,8 @@ exports.moderateContent = async (req, res) => {
   }
   try {
     await db.collection('content').doc(id).update({ approved, moderatedAt: new Date() });
-    res.json({ message: 'Content moderated successfully' });
+    return res.json({ message: 'Content moderated successfully' });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };
